@@ -84,29 +84,49 @@ const singleProduct = async (req, res) => {
 
 // ================= UPDATE PRODUCT =================
 const updateProduct = async (req, res) => {
-  try {
-    const { id, name, description, price, category, subCategory, sizes, bestseller } = req.body;
+    try {
+        const { id, name, description, price, category, subCategory, sizes, bestseller } = req.body;
 
-    const updateData = {
-      name,
-      description,
-      price: Number(price),
-      category,
-      subCategory,
-      sizes: JSON.parse(sizes),
-      bestseller: bestseller === "true" || bestseller === true
-    };
+        // 1. Prepare the update object with text fields
+        const updateData = {
+            name,
+            description,
+            category,
+            subCategory,
+            price: Number(price),
+            bestseller: bestseller === "true",
+            sizes: JSON.parse(sizes)
+        };
 
-    // If you decide to handle new image uploads during edit later, 
-    // you would check req.files here and add them to updateData.
+        // 2. Check if new images were uploaded
+        const imageFiles = [
+            req.files?.image1?.[0],
+            req.files?.image2?.[0],
+            req.files?.image3?.[0],
+            req.files?.image4?.[0],
+        ].filter(Boolean);
 
-    await productModel.findByIdAndUpdate(id, updateData);
+        // 3. If there are new images, upload them and update the image array
+        if (imageFiles.length > 0) {
+            const newImagesUrl = await Promise.all(
+                imageFiles.map(async (item) => {
+                    const result = await cloudinary.uploader.upload(item.path, {
+                        resource_type: "image",
+                    });
+                    return result.secure_url;
+                })
+            );
+            // Replace the old images with new ones
+            updateData.image = newImagesUrl;
+        }
 
-    res.json({ success: true, message: "Product Updated Successfully" });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
+        await productModel.findByIdAndUpdate(id, updateData);
+
+        res.json({ success: true, message: "Product Updated Successfully" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
 };
 
 // FIXED: Included updateProduct in the export
