@@ -51,7 +51,7 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile.type.startsWith('image/')) {
@@ -88,57 +88,31 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!file) return;
+
     setLoading(true);
-  
-    if (!file) {
-      setLoading(false);
-      return;
-    }
-  
-    // Start the loading message sequence
     showLoadingSequence();
-    
-     
+
     try {
-      const uploadForm = new FormData();
-      uploadForm.append('file', file);
-  
-      const uploadRes = await fetch(import.meta.env.VITE_IMAGE_RUN_API_URL, {
-        method: 'POST',
-        headers: {
-          "x-api-key": import.meta.env.VITE_LANGFLOW_API_KEY
-        },
-        body: uploadForm,
+      // We pass the file and gender to our utility
+      // This keeps the "Business Logic" in api.ts and "UI Logic" here
+      const responseText = await callFashionBuddyImages({
+        imageFile: file,
       });
-      if (!uploadRes.ok) throw new Error('File upload failed');
-      const uploadData = await uploadRes.json();
-  
-      const filePath = uploadData.file_path || uploadData.path || uploadData.filename;
-      if (!filePath) throw new Error('No file path returned from upload API');
-  
-      const data = await callFashionBuddyImages(filePath, selectedGender);
-      const response = data.outputs[0].outputs[0].outputs.message.message;
-      setResults(response);
+
+      setResults(responseText);
+
       toast.success('✨ Your personalized fashion suggestions are ready!', {
         duration: 4000,
-        style: {
-          background: '#F7F6F3',
-          color: '#4B2E2B',
-          border: '1px solid #F8E1D9',
-        },
+        style: { background: '#F7F6F3', color: '#4B2E2B', border: '1px solid #F8E1D9' },
       });
     } catch (err) {
+      console.error('Upload Error:', err);
       setResults('');
-      toast.error(`Error: ${(err as Error).message}`, {
-        duration: 4000,
-        style: {
-          background: '#F7F6F3',
-          color: '#4B2E2B',
-          border: '1px solid #F8E1D9',
-        },
-      });
+      toast.error(`Error: ${(err as Error).message}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -146,28 +120,27 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
       onSubmit={handleSubmit}
       className="bg-surface p-8 rounded-xl shadow-soft flex flex-col items-center space-y-6 border border-taupe"
     >
-      <label 
+      <label
         className="w-full flex flex-col items-center cursor-pointer"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         htmlFor="file-upload"
       >
-        <div className={`flex flex-col items-center justify-center w-full h-32 bg-nude rounded-xl border-2 border-dashed transition-all duration-300 ${
-          isDragging 
-            ? 'border-brown scale-105 bg-peach/20' 
+        <div className={`flex flex-col items-center justify-center w-full h-32 bg-nude rounded-xl border-2 border-dashed transition-all duration-300 ${isDragging
+            ? 'border-brown scale-105 bg-peach/20'
             : 'border-taupe hover:border-brown hover:bg-peach/10'
-        }`}>
+          }`}>
           <HiOutlineUpload className={`text-3xl mb-2 transition-transform duration-300 ${isDragging ? 'scale-110 text-brown' : 'text-taupe'}`} />
           <span className={`font-medium transition-colors duration-300 ${isDragging ? 'text-brown' : 'text-taupe'}`}>
             {isDragging ? 'Drop your image here!' : 'Click to upload or drag an image'}
           </span>
-          <input 
+          <input
             id="file-upload"
-            type="file" 
-            accept="image/*" 
-            onChange={handleFileChange} 
-            className="hidden" 
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
           />
         </div>
       </label>
@@ -188,9 +161,8 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
                 onChange={() => handleGenderChange(gender)}
                 className="form-radio text-brown focus:ring-brown h-4 w-4"
               />
-              <span className={`text-brown capitalize transition-all duration-300 group-hover:text-accent ${
-                selectedGender === gender ? 'font-semibold scale-105' : ''
-              }`}>
+              <span className={`text-brown capitalize transition-all duration-300 group-hover:text-accent ${selectedGender === gender ? 'font-semibold scale-105' : ''
+                }`}>
                 {gender}
               </span>
             </label>
