@@ -71,9 +71,9 @@ const Product = () => {
           <button onClick={()=>addToCart(productData._id, size)} className='bg-violet-700 text-white px-8 py-3 text-sm active:bg-gray-700 rounded-lg'>ADD TO CART</button>
           <hr className='mt-8 sm:4/5'/>
           <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1'>
-            <p>100% Original product</p>
-            <p>Cash on delivery is available on this product.</p>
-            <p>Easy return and exchange policy within 7 days.</p>
+            <p>100% оригинал бүтээгдэхүүн</p>
+            <p>Цахим төлбөр хийх боломжтой.</p>
+            <p>7 хоногийн хүрээнд буцаах болон солих боломжтой.</p>
           </div>
         </div>
       </div>

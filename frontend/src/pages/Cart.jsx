@@ -35,7 +35,7 @@ const Cart = () => {
     <div className='border-t pt-14'>
       
       <div className='text-2xl mb-3'>
-        <Title text1={'YOUR'} text2={'CART'}/>
+        <Title text1={'ТАНЫ'} text2={'САГС'}/>
       </div>
 
       <div>
@@ -69,7 +69,7 @@ const Cart = () => {
         <div className='w-full sm:w-[450px]'>
           <CartTotal/>
           <div className='w-full text-end'>
-            <button onClick={()=>navigate('/place-order')} className='bg-violet-700 text-white text-sm my-8 px-8 py-3 rounded-lg'>PROCEED TO CHECKOUT</button>
+            <button onClick={()=>navigate('/place-order')} className='bg-violet-700 text-white text-sm my-8 px-8 py-3 rounded-lg'>ТӨЛБӨР ТӨЛӨХ</button>
           </div>
         </div>
       </div>

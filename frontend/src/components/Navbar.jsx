@@ -76,11 +76,11 @@ const Navbar = () => {
             <img className='h-4 rotate-180' src={assets.dropdown_icon} alt="Back"/>
             <p>Back</p>
           </div>
-          <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/'>HOME</NavLink>
+          <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/'>НҮҮР ХУУДАС</NavLink>
           <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/collection'>COLLECTION</NavLink>
           <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/fashion-buddy'>FASHION BUDDY</NavLink>
-          <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/about'>ABOUT</NavLink>
-          <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/contact'>CONTACT</NavLink>
+          <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/about'>БИДНИЙ ТУХАЙ</NavLink>
+          <NavLink onClick={()=>setVisible(false)} className='py-2 pl-6 border' to='/contact'>ХОЛБОО БАРИХ</NavLink>
         </div>
       </div>
     </div>

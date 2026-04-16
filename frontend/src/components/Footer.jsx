@@ -14,17 +14,17 @@ const Footer = () => {
         </div>
 
         <div>
-          <p className='text-xl font-medium mb-5'>COMPANY</p>
+          <p className='text-xl font-medium mb-5'>КОМПАНИ</p>
           <ul className='flex flex-col gap-1 text-gray-600'>
-             <li>Home</li>
-             <li>About us</li>
-             <li>Delivery</li>
-             <li>Privacy</li>
+             <li>Нүүр хуудас</li>
+             <li>Бидний тухай</li>
+             <li>Хүргэлт</li>
+             <li>Нууцлал</li>
           </ul>
         </div>
         
         <div>
-          <p className='text-xl font-medium mb-5'>GET IN TOUCH</p>
+          <p className='text-xl font-medium mb-5'>ХОЛБОО БАРИХ</p>
           <ul className='flex flex-col gap-1 text-gray-600'>
             <li>+1-212-456-7890</li>
             <li>contact@foreveryou.com</li>

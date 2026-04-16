@@ -43,7 +43,7 @@ const Orders = () => {
     <div className='border-t pt-16'>
 
       <div className='text-2xl'>
-        <Title text1={'MY'} text2={'ORDERS'}/>
+        <Title text1={'ТАНЫ'} text2={'ЗАХИАЛГА'}/>
       </div>
 
     <div>
@@ -59,8 +59,8 @@ const Orders = () => {
                   <p>Quantity: {item.quantity}</p>
                   <p>Size: {item.size}</p>
                 </div>
-                <p className='mt-1'>Date: <span className='text-gray-400'>{new Date(item.date).toDateString()}</span></p>
-                <p className='mt-1'>Payment: <span className='text-gray-400'>{item.paymentMethod}</span></p>
+                <p className='mt-1'>Огноо: <span className='text-gray-400'>{new Date(item.date).toDateString()}</span></p>
+                <p className='mt-1'>Төлбөр: <span className='text-gray-400'>{item.paymentMethod}</span></p>
               </div>
             </div>
             <div className='md:w-1/2 flex justify-between'>
@@ -69,7 +69,7 @@ const Orders = () => {
                 <p className='text-sm md:text-base'>{item.status}</p>
               </div>
               <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm bg-violet-700 text-white'>
-                Track Order
+                Хүргэлт шалгах
               </button>
             </div>
           </div>

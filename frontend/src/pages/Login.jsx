@@ -60,14 +60,14 @@ const Login = () => {
       <input onChange={(e)=>setEmail(e.target.value)} value={email} type="email" className='w-full px-3 py-2 border border-gray-800' placeholder='Email' required/>
       <input onChange={(e)=>setPassword(e.target.value)} value={password} type="password" className='w-full px-3 py-2 border border-gray-800' placeholder='Password' required/>
       <div className='w-full flex justify-between text-sm mt-[-8px]'>
-        <p className='cursor-pointer'>Forgot your password?</p>
+        <p className='cursor-pointer'>Нууц үгээ мартсан?</p>
         {
           currentState === 'Login'
-          ? <p onClick={()=>setCurrentState('Sign Up')} className='cursor-pointer'>Create account</p>
-          : <p onClick={()=>setCurrentState('Login')} className='cursor-pointer'>Login Here</p>
+          ? <p onClick={()=>setCurrentState('Sign Up')} className='cursor-pointer'>Бүртгүүлэх</p>
+          : <p onClick={()=>setCurrentState('Login')} className='cursor-pointer'>Нэвтрэх</p>
         }
       </div>
-      <button className='bg-violet-700 text-white font-light px-8 py-2 mt-4'>{currentState === 'Login' ? 'Sign In' : 'Sign Up'}</button>
+      <button className='bg-violet-700 text-white font-light px-8 py-2 mt-4'>{currentState === 'Login' ? 'Нэвтрэх' : 'Бүртгүүлэх'}</button>
     </form>
   )
 }
