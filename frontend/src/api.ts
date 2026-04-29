@@ -59,46 +59,39 @@ export async function callFashionBuddyText(message: string): Promise<string> {
  * 2. Image Search Function
  * (Matches the export name required by ImageUpload.tsx)
  */
-export async function callFashionBuddyImages({ imageFile }: { imageFile: File }): Promise<string> {
-  if (!API_URL) throw new Error("VITE_FASHION_BUDDY_TEXT_API_URL is not defined in .env");
-
-  // Convert image to Base64 for the Langflow tweak
-  const base64Image = await new Promise<string>((resolve, reject) => {
+export const callFashionBuddyImages = async ({ imageFile }: { imageFile: File }) => {
+  // 1. Convert the file to Base64 inside the API utility
+  const base64 = await new Promise<string>((resolve) => {
     const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
+    reader.onload = () => resolve((reader.result as string).split(',')[1]);
     reader.readAsDataURL(imageFile);
   });
 
-  const payload = {
-    input_value: "Analyze this image and find matching items",
-    input_type: 'chat',
-    output_type: 'chat',
-    tweaks: {
-      // ⚠️ Check your Langflow UI for the exact ID of your Chat Input node
-      "ChatInput-a1b2c": { 
-        "files": [base64Image] 
+  const FLOW_ID = "140316f6-8aa9-4116-a3c1-745fd6e63456";
+  const API_KEY = "sk-6G_820udTdZp1jVrhYJrUjjurKKp1CaTPnoKjb5sZF0";
+
+  const response = await fetch(`http://127.0.0.1:7860/api/v1/run/${FLOW_ID}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY
+    },
+    body: JSON.stringify({
+      input_value: "Analyze this image and recommend similar items.",
+      input_type: "chat",
+      output_type: "chat",
+      tweaks: {
+        // !!! DOUBLE CHECK THIS ID IN LANGFLOW !!!
+        "ChatInput-8Vf2Q": { 
+          "files": base64 
+        }
       }
-    }
-  };
+    })
+  });
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(payload),
-    });
+  if (!response.ok) throw new Error("Langflow connection failed");
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Image API Server Error:", errorData);
-      throw new Error(`Image API Error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.outputs?.[0]?.outputs?.[0]?.results?.message?.text || "No results found for this image.";
-  } catch (error) {
-    console.error("Image search failed:", error);
-    throw error;
-  }
-}
+  const data = await response.json();
+  // Return the text results to be handled by ImageUpload.tsx
+  return data.outputs[0].outputs[0].results.message.text;
+};
