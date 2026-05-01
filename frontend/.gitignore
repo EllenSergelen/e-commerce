@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+echo ".env" >> .gitignore
+echo "**/.env" >> .gitignore
+echo "node_modules/" >> .gitignore
