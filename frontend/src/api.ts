@@ -11,6 +11,7 @@ export const callFashionBuddyImages = async ({
         reader.onload = () => {
             const result = reader.result as string;
             if (result) {
+                // IMPORTANT: Strip the 'data:image/png;base64,' prefix
                 resolve(result.split(',')[1]);
             } else {
                 reject(new Error("File read failed"));
@@ -20,8 +21,6 @@ export const callFashionBuddyImages = async ({
         reader.readAsDataURL(imageFile);
     });
 
-    // Mapped to your specific .env names
-    // Replace your existing lines with these:
     const API_URL = (import.meta as any).env.VITE_FASHION_BUDDY_IMAGE_API_URL;
     const API_KEY = (import.meta as any).env.VITE_LANGFLOW_TOKEN;
 
@@ -31,12 +30,20 @@ export const callFashionBuddyImages = async ({
             'Content-Type': 'application/json',
             'x-api-key': API_KEY
         },
+        // Ensure this part of your callFashionBuddyImages matches your actual Langflow setup:
         body: JSON.stringify({
-            input_value: `Analyze this image for ${gender} fashion.`,
+            input_value: "",
             input_type: "chat",
             output_type: "chat",
             tweaks: {
-                "ChatInput-8Vf2Q": { "files": base64Data }
+                // If your component ID is different, change 'ChatInput-8Vf2Q' here:
+                "ChatInput-akTh7": {
+                    "files": base64Data
+                },
+                "Prompt Template-7Kvxd": { // Optional: ensures variables are targeted
+                    "detected_outfit": "",
+                    "product_matches": ""
+                }
             }
         })
     });
