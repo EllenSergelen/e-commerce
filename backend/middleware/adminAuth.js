@@ -9,19 +9,22 @@ const adminAuth = async (req, res, next) => {
         }
 
         // 1. Verify the token using your secret
-        const token_decode = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-        // 2. Check if the decoded value matches your Admin Secret String
-        // Note: Ensure this matches exactly how you generated the token in your login controller
-        if (token_decode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
+        // 2. Check the role stored in the token payload
+        // This must match the role you assigned in your updated login controller
+        if (decoded.role !== 'admin') {
             return res.json({ success: false, message: "Not Authorized, Login Again" })
         }
 
-        next() // Move to the actual controller function
+        // Attach decoded info to request for use in later controllers if needed
+        req.user = decoded;
+        
+        next() 
         
     } catch (error) {
-        console.log(error) // Fixed: Added .log
-        return res.json({ success: false, message: error.message })
+        console.log(error) 
+        return res.json({ success: false, message: "Session expired or invalid token" })
     }
 }
 
