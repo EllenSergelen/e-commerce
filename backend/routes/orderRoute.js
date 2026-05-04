@@ -5,7 +5,6 @@ import {
   verifyStripe,
   placeOrder,
   placeOrderStripe,
-  placeOrderRazorpay,
   userOrders,
   allOrders,    // Add this (Admin Controller)
   statusOrder   // Add this (Admin Controller)
@@ -22,7 +21,6 @@ orderRouter.post('/status', adminAuth, statusOrder)
 // --- Payment Features (User) ---
 orderRouter.post('/place', authUser, placeOrder)
 orderRouter.post('/stripe', authUser, placeOrderStripe)
-orderRouter.post('/razorpay', authUser, placeOrderRazorpay)
 
 // --- User Feature ---
 orderRouter.post('/userorders', authUser, userOrders)

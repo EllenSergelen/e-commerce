@@ -110,8 +110,6 @@ const verifyStripe = async (req, res) => {
     }
 }
 
-const placeOrderRazorpay = async (req, res) => { /* Logic here */ }
-
 // Admin: Fetch all orders
 const allOrders = async (req, res) => {
     try {
@@ -148,4 +146,4 @@ const statusOrder = async (req, res) => {
 };
 
 // FIX: Added statusOrder to the exports
-export { verifyStripe, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, statusOrder }
+export { verifyStripe, placeOrder, placeOrderStripe, allOrders, userOrders, statusOrder }
