@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useNavigate } from 'react-router-dom'; // Added for single page navigation
 import { HiOutlineArrowRight, HiOutlineShoppingBag } from 'react-icons/hi';
 
 type Props = {
@@ -8,6 +9,8 @@ type Props = {
 };
 
 const Results: React.FC<Props> = ({ results, loading }) => {
+  const navigate = useNavigate();
+
   // 1. Loading State
   if (loading) {
     return (
@@ -29,7 +32,10 @@ const Results: React.FC<Props> = ({ results, loading }) => {
     );
   }
 
-  // 3. Main Results Display
+  // 3. Pre-processing Clean up: Strip formatting quirks like $[100] down to $100
+  const cleanedResults = results.replace(/\$\[(\d+)\]/g, '$$1');
+
+  // 4. Main Results Display
   return (
     <div className="bg-[#FDFCFB] rounded-3xl shadow-2xl p-8 md:p-12 border border-[#F8E1D9] text-[#4B2E2B] prose prose-stone max-w-none transition-all duration-500 ease-in-out">
       <ReactMarkdown
@@ -40,29 +46,34 @@ const Results: React.FC<Props> = ({ results, loading }) => {
           ),
           
           // The "Buy Now" Button Logic
-          a: ({ node, ...props }) => {
-            // Check if the link text contains "Buy Now" or "Purchase"
+          a: ({ node, href, ...props }) => {
+            // Check if the link text contains "Buy Now" or "Shop"
             const linkText = props.children?.toString().toLowerCase() || "";
             const isBuyButton = linkText.includes('buy now') || linkText.includes('shop');
 
             if (isBuyButton) {
               return (
-                <a
-                  {...props}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center group bg-[#4B2E2B] text-white px-10 py-4 rounded-2xl no-underline font-bold transition-all hover:bg-black hover:scale-105 active:scale-95 shadow-xl my-6 w-full md:w-auto"
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (href) {
+                      // Routes internally to /product/:id without triggering a page refresh
+                      navigate(href);
+                    }
+                  }}
+                  className="inline-flex items-center justify-center group bg-[#4B2E2B] text-white px-10 py-4 rounded-2xl font-bold transition-all hover:bg-black hover:scale-105 active:scale-95 shadow-xl my-6 w-full md:w-auto text-left cursor-pointer border-none"
                 >
                   <HiOutlineShoppingBag className="mr-3 text-xl group-hover:rotate-12 transition-transform" />
                   <span>{props.children}</span>
                   <HiOutlineArrowRight className="ml-3 transition-transform group-hover:translate-x-2" />
-                </a>
+                </button>
               );
             }
 
-            // Normal links (Privacy, Info, etc.) stay as styled text
+            // Normal links (Privacy, Info, etc.) stay as standard layout elements
             return (
               <a 
+                href={href}
                 {...props} 
                 className="text-[#8D7B68] underline decoration-[#F8E1D9] hover:text-[#4B2E2B] transition-colors"
               >
@@ -87,7 +98,7 @@ const Results: React.FC<Props> = ({ results, loading }) => {
           ),
         }}
       >
-        {results}
+        {cleanedResults}
       </ReactMarkdown>
     </div>
   );

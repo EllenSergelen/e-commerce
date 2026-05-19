@@ -1,12 +1,11 @@
 import { v2 as cloudinary } from "cloudinary";
-import productModel from "../models/productModel.js";
+import { productCollection } from "../config/astra.js";
 
 // ================= ADD PRODUCT =================
 const addProduct = async (req, res) => {
   try {
     const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
 
-    // Get uploaded images safely
     const images = [
       req.files?.image1?.[0],
       req.files?.image2?.[0],
@@ -14,7 +13,6 @@ const addProduct = async (req, res) => {
       req.files?.image4?.[0],
     ].filter(Boolean);
 
-    // Upload images to Cloudinary
     const imagesUrl = await Promise.all(
       images.map(async (item) => {
         const result = await cloudinary.uploader.upload(item.path, {
@@ -25,6 +23,7 @@ const addProduct = async (req, res) => {
     );
 
     const productData = {
+      _id: `prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`, 
       name,
       description,
       category,
@@ -36,10 +35,8 @@ const addProduct = async (req, res) => {
       date: Date.now(),
     };
 
-    const product = new productModel(productData);
-    await product.save();
-
-    res.json({ success: true, message: "Product Added" });
+    await productCollection.insertOne(productData);
+    res.json({ success: true, message: "Product Added Successfully" });
 
   } catch (error) {
     console.log(error);
@@ -50,7 +47,7 @@ const addProduct = async (req, res) => {
 // ================= LIST PRODUCTS =================
 const listProducts = async (req, res) => {
   try {
-    const products = await productModel.find({});
+    const products = await productCollection.find({}).toArray();
     res.json({ success: true, products });
   } catch (error) {
     console.log(error);
@@ -61,8 +58,7 @@ const listProducts = async (req, res) => {
 // ================= REMOVE PRODUCT =================
 const removeProduct = async (req, res) => {
   try {
-    // Note: Using req.body.id to match your frontend axios call
-    await productModel.findByIdAndDelete(req.body.id);
+    await productCollection.deleteOne({ _id: req.body.id });
     res.json({ success: true, message: "Product Removed" });
   } catch (error) {
     console.log(error);
@@ -74,7 +70,7 @@ const removeProduct = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
-    const product = await productModel.findById(productId);
+    const product = await productCollection.findOne({ _id: productId });
     res.json({ success: true, product });
   } catch (error) {
     console.log(error);
@@ -87,7 +83,6 @@ const updateProduct = async (req, res) => {
     try {
         const { id, name, description, price, category, subCategory, sizes, bestseller } = req.body;
 
-        // 1. Prepare the update object with text fields
         const updateData = {
             name,
             description,
@@ -98,7 +93,6 @@ const updateProduct = async (req, res) => {
             sizes: JSON.parse(sizes)
         };
 
-        // 2. Check if new images were uploaded
         const imageFiles = [
             req.files?.image1?.[0],
             req.files?.image2?.[0],
@@ -106,7 +100,6 @@ const updateProduct = async (req, res) => {
             req.files?.image4?.[0],
         ].filter(Boolean);
 
-        // 3. If there are new images, upload them and update the image array
         if (imageFiles.length > 0) {
             const newImagesUrl = await Promise.all(
                 imageFiles.map(async (item) => {
@@ -116,11 +109,13 @@ const updateProduct = async (req, res) => {
                     return result.secure_url;
                 })
             );
-            // Replace the old images with new ones
             updateData.image = newImagesUrl;
         }
 
-        await productModel.findByIdAndUpdate(id, updateData);
+        await productCollection.updateOne(
+            { _id: id },
+            { $set: updateData }
+        );
 
         res.json({ success: true, message: "Product Updated Successfully" });
     } catch (error) {
@@ -129,5 +124,4 @@ const updateProduct = async (req, res) => {
     }
 };
 
-// FIXED: Included updateProduct in the export
 export { listProducts, addProduct, removeProduct, singleProduct, updateProduct };
