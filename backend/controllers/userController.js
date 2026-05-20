@@ -9,7 +9,7 @@ const createToken = (id, role = 'customer') => {
 };
 
 // ==========================================
-// 1. ROUTE FOR USER LOGIN
+// 1. ROUTE FOR USER LOGIN (Customers)
 // ==========================================
 const loginUser = async (req, res) => {
     try {
@@ -39,7 +39,7 @@ const loginUser = async (req, res) => {
 };
 
 // ==========================================
-// 2. ROUTE FOR USER REGISTRATION
+// 2. ROUTE FOR USER REGISTRATION (Customers)
 // ==========================================
 const registerUser = async (req, res) => {
     try {
@@ -86,24 +86,19 @@ const registerUser = async (req, res) => {
 };
 
 // ==========================================
-// 3. ROUTE FOR ADMIN LOGIN USING DATABASE ROLE
+// 3. ROUTE FOR ADMIN LOGIN USING ENV VARIABLES
 // ==========================================
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Search for user with the specific 'admin' role inside Astra DB
-        const admin = await userCollection.findOne({ email, role: 'admin' });
-        
-        if (!admin) {
-            return res.json({ success: false, message: "Admin account not found" });
-        }
-
-        const isMatch = await bcrypt.compare(password, admin.password);
-
-        if (isMatch) {
-            const token = createToken(admin._id, 'admin');
+        // Securely compare input credentials straight against your Render Environment setup
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            
+            // Create a secure token with an explicit admin identifier payload
+            const token = createToken("admin_dashboard_session", "admin");
             return res.json({ success: true, token });
+            
         } else {
             return res.json({ success: false, message: "Invalid admin credentials" });
         }
