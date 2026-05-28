@@ -45,9 +45,9 @@ const FashionBuddy: React.FC = () => {
           <div className={`bg-peach rounded-full p-3 shadow-soft border-2 border-brown transition-all duration-500 ${loading ? 'animate-bounce' : ''}`}>
             <span className="text-2xl font-bold text-brown transition-all duration-500">{currentEmoji}</span>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight text-brown">Fashion Buddy</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-brown">Хувцасны зөвлөгч</h1>
         </div>
-        <p className="text-taupe text-lg font-medium">Your fashion AI stylist</p>
+        <p className="text-taupe text-lg font-medium">Таны AI стилист</p>
       </header>
 
       {/* Tabs */}
@@ -62,7 +62,7 @@ const FashionBuddy: React.FC = () => {
             onClick={() => setTab('image')}
           >
             <HiOutlineCamera className="text-2xl" />
-            <span>Upload Image</span>
+            <span>Зураг оруулах</span>
           </button>
           <button
             className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 font-semibold text-lg focus:outline-none ${
@@ -73,7 +73,7 @@ const FashionBuddy: React.FC = () => {
             onClick={() => setTab('text')}
           >
             <HiOutlinePencil className="text-2xl" />
-            <span>Describe Item</span>
+            <span>Тайлбар оруулах</span>
           </button>
         </div>
         
@@ -81,8 +81,8 @@ const FashionBuddy: React.FC = () => {
         <div>
           <p className="text-taupe text-lg italic">
             {tab === 'image' 
-              ? "Upload a photo of the style you love. We'll help you add it to your wardrobe! ✨"
-              : "Can't put into words what you're searching for? Let us help you find it online! 🎯"}
+              ? "Сонирхсон хувцасныхаа зургийг оруул. Бид олж өгнө! ✨"
+              : "Юу хүсч байгаагаа үгээр илэрхийлж чадахгүй байна уу? Бид олж өгнө! 🎯"}
           </p>
         </div>
       </div>
@@ -101,12 +101,6 @@ const FashionBuddy: React.FC = () => {
         <Results results={results} loading={loading} />
       </div>
 
-      <footer className="w-full flex flex-col items-center py-6 mt-auto">
-        <div className="flex items-center space-x-3">
-          <span className="text-brown text-lg font-semibold">Powered by</span>
-          <img src="/langflow-logo-color-black-transparent (2).png" alt="Langflow logo" className="h-8" />
-        </div>
-      </footer>
     </div>
   );
 };

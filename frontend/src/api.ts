@@ -1,77 +1,68 @@
+// 1. IMAGE SERVICE: Points to your LOCAL Python FastAPI (Port 8000)
 export const callFashionBuddyImages = async ({
     imageFile,
     gender = "All"
 }: {
     imageFile: File;
     gender?: string;
-}): Promise<string> => {
+}): Promise<any> => {
+    const LOCAL_AI_URL = "http://127.0.0.1:8000/recommend";
+    const formData = new FormData();
+    formData.append('file', imageFile); 
 
-    const base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const result = reader.result as string;
-            if (result) {
-                // IMPORTANT: Strip the 'data:image/png;base64,' prefix
-                resolve(result.split(',')[1]);
-            } else {
-                reject(new Error("File read failed"));
-            }
-        };
-        reader.onerror = (error) => reject(error);
-        reader.readAsDataURL(imageFile);
-    });
+    try {
+        const response = await fetch(LOCAL_AI_URL, {
+            method: 'POST',
+            body: formData,
+        });
 
-    const API_URL = (import.meta as any).env.VITE_FASHION_BUDDY_IMAGE_API_URL;
-    const API_KEY = (import.meta as any).env.VITE_LANGFLOW_TOKEN;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`AI Service Error: ${response.status} - ${errorText}`);
+        }
 
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_KEY
-        },
-        // Ensure this part of your callFashionBuddyImages matches your actual Langflow setup:
-        body: JSON.stringify({
-            input_value: "",
-            input_type: "chat",
-            output_type: "chat",
-            tweaks: {
-                // If your component ID is different, change 'ChatInput-8Vf2Q' here:
-                "ChatInput-akTh7": {
-                    "files": base64Data
-                },
-                "Prompt Template-7Kvxd": { // Optional: ensures variables are targeted
-                    "detected_outfit": "",
-                    "product_matches": ""
-                }
-            }
-        })
-    });
-
-    if (!response.ok) throw new Error("API error");
-    const data = await response.json();
-    return data.outputs[0].outputs[0].results.message.text;
+        const result = await response.json();
+        // Return the whole result so Results.tsx can extract item and top_matches
+        return result; 
+    } catch (err) {
+        console.error("Connection to AI failed:", err);
+        throw new Error("Make sure your Python AI terminal is running on port 8000.");
+    }
 };
 
-export const callFashionBuddyText = async (inputValue: string): Promise<string> => {
-    // Mapped to your specific .env names
-    // Replace your existing lines with these:
-    const API_URL = (import.meta as any).env.VITE_FASHION_BUDDY_TEXT_API_URL;
-    const API_KEY = (import.meta as any).env.VITE_LANGFLOW_TOKEN;
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_KEY
-        },
-        body: JSON.stringify({
-            input_value: inputValue,
-            input_type: "chat",
-            output_type: "chat"
-        })
-    });
+// 2. NEW MONGODB TEXT SERVICE: Queries your internal Node.js / Express backend
+export const callFashionBuddyText = async (inputValue: string): Promise<any> => {
+    // Points to your Express backend local development port
+    const BACKEND_URL = "http://localhost:5000/api/products/search"; 
+    
+    try {
+        const response = await fetch(BACKEND_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // If your app uses administrative or user tokens, attach them here:
+                // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ query: inputValue })
+        });
 
-    if (!response.ok) throw new Error("API connection failed");
-    const data = await response.json();
-    return data.outputs[0].outputs[0].results.message.text;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Database Server Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        /* To ensure perfect backward compatibility with your working Results.tsx, 
+          map your text database results to simulate the same layout structure:
+          [{ item: "Text Search", top_matches: [...] }]
+        */
+        return [{
+            item: inputValue.toUpperCase(),
+            top_matches: data.products || data
+        }];
+    } catch (err) {
+        console.error("Connection to backend database failed:", err);
+        throw new Error("Make sure your Express/Node.js server is running on port 5000.");
+    }
 };

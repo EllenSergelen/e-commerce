@@ -97,11 +97,11 @@ const Add = ({ token, selectedProduct, isEdit, setShowEditModal, fetchList }) =>
 
   return (
     <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-4 p-4 bg-white rounded-lg">
-      <h2 className="text-xl font-bold">{isEdit ? "Edit Product" : "Add Product"}</h2>
+      <h2 className="text-xl font-bold">{isEdit ? "Засах" : "Нэмэх"}</h2>
       
       {/* Image Upload */}
       <div>
-        <p className="mb-2 font-medium">Upload New Images {isEdit && "(Optional)"}</p>
+        <p className="mb-2 font-medium">Зураг оруулах {isEdit && "(Optional)"}</p>
         <div className="flex gap-3">
           {images.map((img, index) => (
             <label key={index} htmlFor={`image${index}`}>
@@ -118,43 +118,43 @@ const Add = ({ token, selectedProduct, isEdit, setShowEditModal, fetchList }) =>
 
       {/* Name */}
       <div className="w-full">
-        <p className="mb-2">Product Name</p>
+        <p className="mb-2">Нэр</p>
         <input value={name} onChange={(e) => setName(e.target.value)} className="w-full max-w-[500px] px-3 py-2 border" type="text" required />
       </div>
 
       {/* Description */}
       <div className="w-full">
-        <p className="mb-2">Product Description</p>
+        <p className="mb-2">Тайлбар</p>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full max-w-[500px] px-3 py-2 border" required />
       </div>
 
       {/* Category/Price Row */}
       <div className="flex gap-6 flex-wrap">
         <div>
-          <p className="mb-2">Category</p>
+          <p className="mb-2">Төрөл</p>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className="px-3 py-2 border">
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
+            <option value="Men">Эрэгтэй</option>
+            <option value="Women">Эмэгтэй</option>
+            <option value="Kids">Хүүхэд</option>
           </select>
         </div>
         <div>
-          <p className="mb-2">Sub Category</p>
+          <p className="mb-2">Дэд төрөл</p>
           <select value={subCategory} onChange={(e) => setSubCategory(e.target.value)} className="px-3 py-2 border">
-            <option value="Topwear">Topwear</option>
-            <option value="Bottomwear">Bottomwear</option>
-            <option value="Winterwear">Winterwear</option>
+            <option value="Topwear">Цамц</option>
+            <option value="Bottomwear">Өмд</option>
+            <option value="Winterwear">Өвлийн</option>
           </select>
         </div>
         <div>
-          <p className="mb-2">Price</p>
+          <p className="mb-2">Үнэ</p>
           <input value={price} onChange={(e) => setPrice(e.target.value)} className="px-3 py-2 border" type="number" required />
         </div>
       </div>
 
       {/* Sizes */}
       <div>
-        <p className="mb-2">Product Sizes</p>
+        <p className="mb-2">Хэмжээ</p>
         <div className="flex gap-3">
           {["S", "M", "L", "XL", "XXL"].map((size) => (
             <p key={size} onClick={() => toggleSize(size)} className={`px-3 py-1 cursor-pointer rounded ${sizes.includes(size) ? "bg-violet-700 text-white" : "bg-slate-200"}`}>
@@ -167,18 +167,18 @@ const Add = ({ token, selectedProduct, isEdit, setShowEditModal, fetchList }) =>
       {/* Bestseller */}
       <div className="flex gap-2 mt-2">
         <input id="bestseller" type="checkbox" checked={bestSeller} onChange={() => setBestseller((prev) => !prev)} />
-        <label htmlFor="bestseller" className="cursor-pointer">Add to bestseller</label>
+        <label htmlFor="bestseller" className="cursor-pointer">Бэстсэллэрт нэмэх</label>
       </div>
 
       {/* Action Buttons */}
       <div className="flex gap-4">
         <button type="submit" className="w-32 py-3 bg-violet-700 text-white rounded-lg">
-          {isEdit ? "UPDATE" : "ADD"}
+          {isEdit ? "ЗАСАХ" : "НЭМЭХ"}
         </button>
         
         {isEdit && (
             <button type="button" onClick={() => setShowEditModal(false)} className="w-32 py-3 bg-gray-500 text-white rounded-lg">
-                CANCEL
+                ЦУЦЛАХ
             </button>
         )}
       </div>

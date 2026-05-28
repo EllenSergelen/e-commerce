@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
-import connectAstra from './config/astra.js'
+import connectDB from './config/mongodb.js' // ✨ Changed from astra to native MongoDB config
 import connectCloudinary from './config/cloudinary.js'
 import userRouter from './routes/userRouter.js'
 import productRouter from './routes/productRoute.js'
@@ -11,12 +11,13 @@ import orderRouter from './routes/orderRoute.js'
 console.log("Checking Env Variables...");
 console.log("Stripe Key exists:", !!process.env.STRIPE_SECRET_KEY);
 console.log("Cloudinary Name:", process.env.CLOUDINARY_NAME);
+console.log("MongoDB URI exists:", !!process.env.MONGO_URI); // Added log check for your MongoDB string
 
 const app = express()
 const port = process.env.PORT || 4000
 
-// Initialize Cloud Infrastructure Connections
-connectAstra() 
+// Initialize Local and Cloud Infrastructure Connections
+connectDB() // ✨ Now safely initializes native MongoDB connection
 connectCloudinary()
 
 // --- OPTIMIZED CORS & MIDDLEWARES ---

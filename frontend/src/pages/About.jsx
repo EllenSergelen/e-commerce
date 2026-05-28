@@ -8,7 +8,7 @@ const About = () => {
     <div>
 
       <div className='text-2xl text-center pt-8 border-t'>
-        <Title text1={'БИДНИЙ ТУХАЙ'} text2={'US'}/>
+        <Title text1={'БИДНИЙ'} text2={'ТУХАЙ'}/>
       </div>
 
       <div className='my-10 flex flex-col md:flex-row gap-16'>
@@ -39,8 +39,6 @@ const About = () => {
           <p className='text-gray-600'>...</p>
         </div>
       </div>
-
-      <NewsletterBox/>
       
     </div>
   )

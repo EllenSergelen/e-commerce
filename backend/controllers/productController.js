@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import { productCollection } from "../config/astra.js";
+import productModel from "../models/productModel.js"; // ✨ Swapped Astra with your Mongoose Product Model
 
 // ================= ADD PRODUCT =================
 const addProduct = async (req, res) => {
@@ -23,6 +23,7 @@ const addProduct = async (req, res) => {
     );
 
     const productData = {
+      // Custom string ID preserved for backward compatibility
       _id: `prod_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`, 
       name,
       description,
@@ -35,7 +36,8 @@ const addProduct = async (req, res) => {
       date: Date.now(),
     };
 
-    await productCollection.insertOne(productData);
+    // ✨ Saved to MongoDB using Mongoose model structure
+    await productModel.create(productData);
     res.json({ success: true, message: "Product Added Successfully" });
 
   } catch (error) {
@@ -47,7 +49,8 @@ const addProduct = async (req, res) => {
 // ================= LIST PRODUCTS =================
 const listProducts = async (req, res) => {
   try {
-    const products = await productCollection.find({}).toArray();
+    // ✨ Fetch all records cleanly via standard find query
+    const products = await productModel.find({});
     res.json({ success: true, products });
   } catch (error) {
     console.log(error);
@@ -58,7 +61,8 @@ const listProducts = async (req, res) => {
 // ================= REMOVE PRODUCT =================
 const removeProduct = async (req, res) => {
   try {
-    await productCollection.deleteOne({ _id: req.body.id });
+    // ✨ Native Mongoose deletion targeting custom string ID
+    await productModel.findByIdAndDelete(req.body.id);
     res.json({ success: true, message: "Product Removed" });
   } catch (error) {
     console.log(error);
@@ -70,7 +74,8 @@ const removeProduct = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
-    const product = await productCollection.findOne({ _id: productId });
+    // ✨ Target unique matching document
+    const product = await productModel.findById(productId);
     res.json({ success: true, product });
   } catch (error) {
     console.log(error);
@@ -112,10 +117,8 @@ const updateProduct = async (req, res) => {
             updateData.image = newImagesUrl;
         }
 
-        await productCollection.updateOne(
-            { _id: id },
-            { $set: updateData }
-        );
+        // ✨ Atomically update the product fields using findByIdAndUpdate
+        await productModel.findByIdAndUpdate(id, { $set: updateData });
 
         res.json({ success: true, message: "Product Updated Successfully" });
     } catch (error) {

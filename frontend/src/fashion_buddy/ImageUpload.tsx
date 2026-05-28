@@ -31,9 +31,9 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
       if (selectedFile.type.startsWith('image/')) {
         setFile(selectedFile);
         setPreview(URL.createObjectURL(selectedFile));
-        toast.success('Image uploaded successfully! 📸');
+        toast.success('Зургийг амжилттай орууллаа! 📸');
       } else {
-        toast.error('Please upload an image file');
+        toast.error('Зургийн файл оруулна уу');
       }
     }
   };
@@ -57,9 +57,9 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
       if (droppedFile.type.startsWith('image/')) {
         setFile(droppedFile);
         setPreview(URL.createObjectURL(droppedFile));
-        toast.success('Image uploaded successfully! 📸');
+        toast.success('Зургийг амжилттай орууллаа! 📸');
       } else {
-        toast.error('Please upload an image file');
+        toast.error('Зургийн файл оруулна уу');
       }
     }
   };
@@ -69,40 +69,23 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
     toast.success(`Selected ${gender}'s fashion`);
   };
 
-  // Function to show loading messages in sequence
-  const showLoadingSequence = () => {
-    LOADING_MESSAGES.forEach(({ message, duration }, index) => {
-      setTimeout(() => {
-        toast(message, {
-          duration: duration,
-          icon: '⏳',
-          style: {
-            background: '#F7F6F3',
-            color: '#4B2E2B',
-            border: '1px solid #F8E1D9',
-          },
-        });
-      }, index * duration);
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) return;
 
     setLoading(true);
-    showLoadingSequence();
 
     try {
-      // We pass the file and gender to our utility
-      // This keeps the "Business Logic" in api.ts and "UI Logic" here
+      // FULL FIX: Explicitly passing both imageFile AND the selected gender down to the API utility
       const responseText = await callFashionBuddyImages({
         imageFile: file,
+        gender: selectedGender,
       });
 
       setResults(responseText);
 
-      toast.success('✨ Your personalized fashion suggestions are ready!', {
+      toast.success('✨ Танд санал болгосон хувцас энд гарч ирлээ!', {
         duration: 4000,
         style: { background: '#F7F6F3', color: '#4B2E2B', border: '1px solid #F8E1D9' },
       });
@@ -133,7 +116,7 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
           }`}>
           <HiOutlineUpload className={`text-3xl mb-2 transition-transform duration-300 ${isDragging ? 'scale-110 text-brown' : 'text-taupe'}`} />
           <span className={`font-medium transition-colors duration-300 ${isDragging ? 'text-brown' : 'text-taupe'}`}>
-            {isDragging ? 'Drop your image here!' : 'Click to upload or drag an image'}
+            {isDragging ? 'Энд хувцсаа оруулна уу!' : 'Энд хувцсаа оруулна уу!'}
           </span>
           <input
             id="file-upload"
@@ -146,7 +129,7 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
       </label>
 
       {/* Gender Selection */}
-      <div className="flex flex-col items-center w-full space-y-2">
+{/*      <div className="flex flex-col items-center w-full space-y-2">
         <span className="text-brown font-bold">Select Gender</span>
         <div className="flex space-x-4">
           {(['Men', 'Women', 'All'] as Gender[]).map((gender) => (
@@ -168,7 +151,7 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
             </label>
           ))}
         </div>
-      </div>
+      </div>*/}
 
       {preview && (
         <img
@@ -182,10 +165,10 @@ const ImageUpload: React.FC<Props> = ({ setResults, setLoading }) => {
         className="bg-brown text-offwhite px-8 py-3 rounded-full text-lg font-semibold shadow-soft transition-all duration-300 hover:bg-accent hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-brown"
         disabled={!file}
       >
-        Get Suggestions
+        Хувцас олох
       </button>
     </form>
   );
 };
 
-export default ImageUpload; 
+export default ImageUpload;

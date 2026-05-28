@@ -51,7 +51,7 @@ const Orders = ({ token }) => {
 
   return (
     <div>
-      <h3>Order Page</h3>
+      <h3>Захиалгын хуудас</h3>
       <div>
         {
           orders.map((order, index) => (
@@ -83,11 +83,9 @@ const Orders = ({ token }) => {
               </div>
               <p className='text-sm sm:text-[15px]'>{currency}{order.amount}</p>
               <select onChange={(event) => statusHandler(event, order._id)} value={order.status} className='p-2 font-semibold'>
-                <option value="Order Placed">Order Placed</option>
-                <option>Packing</option>
-                <option>Shipped</option>
-                <option>Out for delivery</option>
-                <option>Delivered</option>
+                <option value="Order Placed">Захиалгууд</option>
+                <option>Хүргэгдээгүй байгаа</option>
+                <option>Хүргэгдсэн</option>
               </select>
             </div>
           ))

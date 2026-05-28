@@ -11,17 +11,13 @@ const List = ({ token }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // This is the missing function causing your error!
   const handleEdit = (item) => {
     setSelectedProduct(item);
     setShowEditModal(true);
   };
 
-  // admin/src/pages/List.jsx
-
   const fetchList = async () => {
     try {
-      // Change .post to .get
       const response = await axios.get(backendUrl + '/api/product/list')
 
       if (response.data.success) {
@@ -62,15 +58,15 @@ const List = ({ token }) => {
 
   return (
     <>
-      <p className='mb-2'>All Products List</p>
+      <p className='mb-2'>Бүтээгдэхүүний жагсаалт</p>
 
       <div className='flex flex-col gap-2'>
         <div className='hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 px-2 border bg-gray-100 text-sm'>
-          <b>Image</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b className='text-center'>Action</b>
+          <b>Зураг</b>
+          <b>Нэр</b>
+          <b>Төрөл</b>
+          <b>Үнэ</b>
+          <b className='text-center'>Үйлдэл</b>
         </div>
 
         {list.map((item) => (
@@ -78,10 +74,15 @@ const List = ({ token }) => {
             key={item._id}
             className='grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center gap-2 py-1 px-2 border text-sm'
           >
-            <img className='w-12' src={item.image[0]} alt={item.name} />
+            {/* FULL FIX: Safe rendering array protection check */}
+            <img 
+              className='w-12 h-12 object-cover rounded' 
+              src={item.image && Array.isArray(item.image) && item.image[0] ? item.image[0] : 'https://placehold.co/50'} 
+              alt={item.name} 
+            />
             <p>{item.name}</p>
             <p className='hidden md:block'>{item.category}</p>
-            <p className='hidden md:block'>$ {item.price}</p>
+            <p className='hidden md:block'>{item.price}₮</p>
 
             <div className='flex flex-col md:flex-row gap-2 md:gap-4 justify-center items-center'>
               {/* Edit Button */}
@@ -89,7 +90,7 @@ const List = ({ token }) => {
                 onClick={() => handleEdit(item)}
                 className='cursor-pointer text-blue-500 hover:underline'
               >
-                Edit
+                Засах
               </p>
 
               {/* Delete Button */}

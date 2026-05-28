@@ -1,7 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
-import { userCollection } from "../config/astra.js"; // Importing our unified Astra DB instance
+import userModel from "../models/userModel.js"; // ✨ Swapped Astra with your Mongoose User Model
 
 // Helper function updated to include role in payload and expiration configuration
 const createToken = (id, role = 'customer') => {
@@ -15,14 +15,14 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         
-        // Query Astra DB directly for the target user record
-        const user = await userCollection.findOne({ email });
+        // ✨ Query MongoDB via Mongoose model instead of Astra DB
+        const user = await userModel.findOne({ email });
 
         if (!user) {
             return res.json({ success: false, message: "User does not exist" });
         }
 
-        // Compare incoming plain-text credentials against the hashed password string stored in Astra
+        // Compare incoming plain-text credentials against the hashed password string stored in MongoDB
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch) {
@@ -45,8 +45,8 @@ const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Check if user already exists in Astra DB
-        const exists = await userCollection.findOne({ email });
+        // ✨ Check if user already exists in MongoDB
+        const exists = await userModel.findOne({ email });
         if (exists) {
             return res.json({ success: false, message: "User already exists" });
         }
@@ -63,9 +63,9 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Prepare Astra DB user payload structure with explicit default role
+        // Prepare document payload structure with your uniform string-based key format
         const userData = {
-            _id: `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`, // Unified string-based structural key format
+            _id: `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`, 
             name,
             email,
             password: hashedPassword,
@@ -73,8 +73,8 @@ const registerUser = async (req, res) => {
             date: Date.now()
         };
 
-        // Insert fresh user document straight into the Astra collection context
-        await userCollection.insertOne(userData);
+        // ✨ Insert document cleanly into MongoDB collection via Mongoose .create()
+        await userModel.create(userData);
 
         const token = createToken(userData._id, userData.role);
         return res.json({ success: true, token });
@@ -92,7 +92,7 @@ const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Securely compare input credentials straight against your Render Environment setup
+        // Securely compare input credentials straight against your Environment setup
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             
             // Create a secure token with an explicit admin identifier payload

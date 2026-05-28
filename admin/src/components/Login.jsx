@@ -29,10 +29,10 @@ const Login = ({ setToken }) => {
   return (
     <div className='min-h-screen flex items-center justify-center w-full'>
       <div className='bg-white shadow-md rounded-lg px-8 py-6 max-w-md'>
-        <h1 className='text-xl font-bold mb-4'>Admin Panel Login</h1>
+        <h1 className='text-xl font-bold mb-4'>Админ панель</h1>
         <form onSubmit={onSubmitHandler}>
           <div className='mb-3'>
-            <p className='text-sm font-medium text-gray-700 mb-2'>Email Address</p>
+            <p className='text-sm font-medium text-gray-700 mb-2'>Имэйл хаяг</p>
             <input 
               onChange={(e) => setEmail(e.target.value)} 
               value={email} 
@@ -44,7 +44,7 @@ const Login = ({ setToken }) => {
           </div>
 
           <div className='mb-4'>
-            <p className='text-sm font-medium text-gray-700 mb-2'>Password</p>
+            <p className='text-sm font-medium text-gray-700 mb-2'>Нууц үг</p>
             <input 
               onChange={(e) => setPassword(e.target.value)} 
               value={password} 
