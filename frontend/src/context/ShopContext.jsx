@@ -6,8 +6,9 @@ import axios from "axios";
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
-  const currency = "$";
-  const delivery_fee = 10;
+  // ✨ Swapped the currency sign and adjusted the delivery fee for ₮ currency mapping
+  const currency = "₮";
+  const delivery_fee = 5000; 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [search, setSearch] = useState("");
@@ -20,7 +21,7 @@ const ShopContextProvider = (props) => {
   // ================= ADD TO CART =================
   const addToCart = async (itemId, size) => {
     if (!size) {
-      toast.error("Select Product Size");
+      toast.error("Хэмжээгээ сонгоно уу"); // Localized error notification
       return;
     }
 
@@ -36,7 +37,7 @@ const ShopContextProvider = (props) => {
       return updatedCart;
     });
 
-    toast.success("Added to cart!");
+    toast.success("Сагсанд амжилттай нэмэгдлээ!");
 
     // 2. Sync with Backend
     if (token) {

@@ -82,7 +82,7 @@ const TextInput: React.FC<Props> = ({ setResults, setLoading }) => {
                     ref={textareaRef}
                     value={text}
                     onChange={handleChange}
-                    placeholder="Describe the clothing item (e.g., 'Blue summer dress for a wedding')..."
+                    placeholder="Тайлбар оруулна уу... (Жишээ: Би хавар зуны хувцас хайж байна, өнгө нь цайвар байхыг хүсэж байна)"
                     rows={2}
                     className="flex-1 bg-nude border-none rounded-2xl px-5 py-4 text-lg focus:ring-2 focus:ring-peach transition-all placeholder-taupe text-brown min-h-[48px]"
                     style={{ resize: 'none', maxHeight: '200px' }}
@@ -93,7 +93,7 @@ const TextInput: React.FC<Props> = ({ setResults, setLoading }) => {
                 className="bg-brown text-offwhite px-8 py-3 rounded-full text-lg font-semibold shadow-soft transition-all hover:bg-accent disabled:opacity-50"
                 disabled={!text.trim()}
             >
-                Get Suggestions
+                Хувцас олох
             </button>
         </form>
     );
