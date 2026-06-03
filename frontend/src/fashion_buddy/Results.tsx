@@ -26,7 +26,7 @@ const Results: React.FC<Props> = ({ results, loading }) => {
   // 2. SMART-CATCH DATA PARSER (Normalizes API structures so it never renders blank)
   let markdownContent = "";
 
-  // Extract inner data if the response is wrapped in a backend success object (e.g., response.data or response.products)
+  // Extract inner data if the response is wrapped in a backend success object
   let cleanResults = results;
   if (results && typeof results === 'object' && !Array.isArray(results)) {
     if (Array.isArray(results.data)) cleanResults = results.data;
@@ -37,22 +37,24 @@ const Results: React.FC<Props> = ({ results, loading }) => {
 
   // CASE A: Data is an Array (Vision / Multi-Match response)
   if (cleanResults && Array.isArray(cleanResults) && cleanResults.length > 0) {
-    markdownContent = "## 📸 Үр дүн\n\n";
-
-    // Handle array of detections OR direct array of product matches
     const firstElement = cleanResults[0];
 
-    // If it's a nested vision structure (contains top_matches, matches, or predictions)
+    // Check if it's a nested vision/text AI structure
     if (firstElement && typeof firstElement === 'object' && ('top_matches' in firstElement || 'matches' in firstElement || 'predictions' in firstElement || 'item' in firstElement)) {
-      const detectedItem = firstElement.item || firstElement.detected_object || "Detected Item";
+      const detectedItem = firstElement.item || firstElement.detected_object || "Үр дүн";
       let rawMatches = firstElement.top_matches || firstElement.matches || firstElement.predictions || [];
       const matches = Array.isArray(rawMatches) ? rawMatches : [];
 
-      markdownContent += `Олсон: **${detectedItem}**\n\n---\n\n`;
+      // ✨ УХААЛАГ ГАРЧИГ: Текст хайлт уу, Зураг уу гэдгийг ялгана
+      if (detectedItem.includes("ХАЙЛТ:")) {
+        markdownContent = `## 🔍 Хайлтын илэрц\n\n**${detectedItem}**\n\n---\n\n`;
+      } else {
+        markdownContent = `## 📸 Зургийн шинжилгээ\n\nИлрүүлсэн хувцас: **${detectedItem}**\n\n---\n\n`;
+      }
 
       if (matches.length > 0) {
         matches.forEach((match: any, index: number) => {
-          const title = match.label || match.product_name || match.name || match.title || `Match ${index + 1}`;
+          const title = match.label || match.product_name || match.name || match.title || `Илэрц ${index + 1}`;
           const profile = match.style || match.profile || match.category || "Suggested Style";
           
           let rawScore = match.score || match.confidence || 0;
@@ -60,8 +62,8 @@ const Results: React.FC<Props> = ({ results, loading }) => {
           const displayScore = Number(rawScore).toFixed(1);
 
           markdownContent += `### **${title}**\n`;
-          markdownContent += `* **Style Profile:** ${profile}\n`;
-          markdownContent += `* **Match Confidence:** ${displayScore}%\n\n`;
+          markdownContent += `* **Стиль / Төлөв:** ${profile}\n`;
+          markdownContent += `* **Тохирох магадлал:** ${displayScore}%\n\n`;
 
           const productID = match.product_id || match.id || match._id;
           if (productID) {
@@ -70,11 +72,12 @@ const Results: React.FC<Props> = ({ results, loading }) => {
           markdownContent += `---\n\n`;
         });
       } else {
-        markdownContent += "Finding the best matches for your style...";
+        markdownContent += "Таны стильд тохирох хувцас олдсонгүй. Өөрөөр бичиж үзнэ үү...";
       }
     } 
-    // If the server directly returned an array of product items instead of nested vision tracking
+    // If the server directly returned an array of product items instead of nested AI structures
     else {
+      markdownContent = "## 🛍️ Олдсон хувцаснууд\n\n";
       cleanResults.forEach((product: any, index: number) => {
         const title = product.name || product.title || `Product ${index + 1}`;
         const category = product.category || product.subCategory || "Fashion Item";
@@ -96,9 +99,9 @@ const Results: React.FC<Props> = ({ results, loading }) => {
   else if (typeof results === 'string' && results.trim().length > 0) {
     markdownContent = results;
   } 
-  // CASE C: Fallback Catch-all if data is completely unexpected format (Prevents blank components!)
+  // CASE C: Fallback Catch-all if data is completely unexpected format
   else if (results) {
-    markdownContent = "## 📸 Analysis Complete\n\nWe successfully processed your image! Click below to view the updated catalog matches.\n\n";
+    markdownContent = "## ✨ Шинжилгээ бэлэн боллоо\n\nАмжилттай боловсруулж дууслаа! Доорх товчийг дарж цуглуулгыг үзнэ үү.\n\n";
     if (results.id || results._id) {
       markdownContent += `[Авах](/product/${results.id || results._id})\n\n`;
     } else {
@@ -157,8 +160,9 @@ const Results: React.FC<Props> = ({ results, loading }) => {
           {cleanedResults}
         </ReactMarkdown>
       ) : (
+        // ✨ УЯН ХАТАН ХООСОН ҮЕИЙН ТЕКСТ:
         <div className="text-[#8D7B68] text-center py-6 italic">
-          Зураг оруулаагүй байна. Та хувцасны зөвлөгчийн тусламжтайгаар өөрийн стильд тохирсон хувцаснуудыг олохын тулд зургийг оруулна уу!
+          Одоогоор илэрц олдсонгүй. Та дээрх талбарт хайх хувцасныхаа тайлбарыг бичих эсвэл зургаа оруулж ухаалаг зөвлөхөөс тусламж аваарай!
         </div>
       )}
     </div>
